@@ -1,4 +1,4 @@
-# v1/v1.py
+# v1.py
 
 import sys
 
