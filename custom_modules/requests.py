@@ -6,6 +6,7 @@ import ssl
 
 
 def send_request(url:str):
+    print(url)
     # parse url
     parsed_url = urlparse(url)
     scheme = parsed_url.scheme
@@ -41,4 +42,5 @@ def send_request(url:str):
         #print("Error: Request timed out")
 
     client.close()
-    return response.decode()
+
+    return response

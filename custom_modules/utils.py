@@ -1,7 +1,7 @@
 # utils.py
 
 import os
-from urllib.parse import urlparse
+from urllib.parse import urlparse,urljoin
 
 def valid_url(url:str):
     parsed_url = urlparse(url)
@@ -9,7 +9,7 @@ def valid_url(url:str):
     valid_host = bool(parsed_url.hostname)
     return valid_scheme and valid_host
 
-def create_download_directory(url:str, downloads_folder_path):
+def create_download_directory(url:str, downloads_folder_path:str):
     host = urlparse(url).hostname
     # Define the directory name and path
     directory_name = host
