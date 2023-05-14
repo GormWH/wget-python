@@ -6,7 +6,6 @@ import ssl
 
 
 def send_request(url:str):
-    print(url)
     # parse url
     parsed_url = urlparse(url)
     scheme = parsed_url.scheme

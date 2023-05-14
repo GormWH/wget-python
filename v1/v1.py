@@ -1,10 +1,5 @@
 # v1.py
 
-import sys
-
-# setting path
-sys.path.append('../custum_modules')
-
 import os
 from urllib.parse import urlparse
 from custom_modules.requests import send_request
@@ -22,7 +17,7 @@ def download_html(url, directory_path):
     else:
         html = header_and_body[1]
     
-    print(response)
+    # print(response)
 
     if bool(html) and is_content_html(header):
         write_html_file(url, html, directory_path)

@@ -1,16 +1,69 @@
-# v2.py
+# v3.py
 
-import os
+import threading
 from urllib.parse import urlparse
 from custom_modules.requests import send_request
 from custom_modules.html_parser import extract_internal_links
 
-def download_htmls(url, directory_path):
-    html = download_html_from_url(url, directory_path)
-    internal_links = extract_internal_links(url, html)
-    for link_url in internal_links:
-        download_html_from_url(link_url, directory_path)
+file_count = 0
 
+def download_htmls_of_depth(url:str, directory_path:str, depth:int=0):
+    visited_urls = set()
+
+    target_urls = set()
+    target_urls.add(url)
+
+    for i in range(depth + 1):
+        print("Current depth = ", i)
+        htmls = download_htmls_from_urls(target_urls, directory_path)
+        visited_urls.update(target_urls)
+        tmp = set()
+        for html_source_url, html in htmls.items():
+            if not bool(html):
+                continue
+            internal_links = extract_internal_links(html_source_url, html)
+            new_links = [link for link in internal_links if link not in visited_urls]
+            tmp.update(new_links)
+        target_urls = tmp
+
+    
+    for visited_url in visited_urls:
+        print(visited_url)
+    global file_count
+    print(f"Total of {file_count} urls were downloaded")
+
+
+def download_htmls_from_urls(urls:set, directory_path:str):
+    threads = []
+    results = {}
+
+    # Limit the number of threads to 50
+    max_threads = 100
+    num_threads = min(len(urls), max_threads)
+
+    # Use a semaphore to limit the number of active threads
+    semaphore = threading.Semaphore(num_threads)
+
+    def download_html_from_url_worker(url):
+        try:
+            semaphore.acquire()
+            results[url] = download_html_from_url(url, directory_path)
+        except Exception as e:
+            print(f"Error downloading {url}: {e}")
+        finally:
+            semaphore.release()
+
+    # start threads for each URL
+    for url in urls:
+        thread = threading.Thread(target=download_html_from_url_worker, args=[url])
+        threads.append(thread)
+        thread.start()
+
+    # wait for all threads to finish
+    for thread in threads:
+        thread.join()
+
+    return {k: v for k, v in results.items() if v} # filter empty htmls
 
 def download_html_from_url(url:str, directory_path:str):
     """
@@ -21,21 +74,24 @@ def download_html_from_url(url:str, directory_path:str):
     header_and_body = response.split(b"\r\n\r\n", 1)
     try:
         header = header_and_body[0].decode()
-        if len(header_and_body) < 2:
-            html = ""
-        else:
-            html = header_and_body[1]
+        if is_content_html(header):
+            if len(header_and_body) < 2:
+                html = ""
+            else:
+                html = header_and_body[1]
 
-        if bool(html) and is_content_html(header):
-            html = html.decode()
-            write_html_file(url, html, directory_path)
-            print("Downloading: ", url)
+            if bool(html):
+                html = html.decode()
+                write_html_file(url, html, directory_path)
+                print("Downloading: ", url)
+                return html
+            else:
+                return ""
         
-        return html
+        
     except UnicodeDecodeError: # Sometimes this error occured. Wasn't able to handle right.
         print("Error:'utf-8' codec can't decode content in ", url)
         return ""
-
 
 
 def is_content_html(header:str):
@@ -71,6 +127,8 @@ def write_html_file(url:str, html:str, directory_path:str):
         # Write HTML to file
         file.write(f"<!-- This file is generated from: {url} -->")
         file.write(html)
+        global file_count
+        file_count = file_count + 1
 
 
 def make_file_name(url:str):
