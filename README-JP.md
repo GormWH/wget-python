@@ -37,6 +37,6 @@ $ pip install -r requirements.txt
 $ python main.py <url>
 ```
 
-すると，`./downlads/<domain>`ディレクトリにHTMLコンテンツをダウンロードされる．
+すると，`./downlads/<domain>`ディレクトリにHTMLコンテンツがダウンロードされる．
 
 `<url>`に<https://www.city.takatsuki.osaka.jp/index2.html>を代入し実行した結果，約１３分経過後に合計6876個のhtmlファイルがダウンロードされた．
