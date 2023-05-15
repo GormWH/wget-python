@@ -1,5 +1,7 @@
 # wget-python
 
+*Read this in other languages: [English](README.md), [日本語](README-JP.md).*
+
 This repo is a practice for implementing 'wget' like proformance with Python without using http modules(for example, 'requests' module).
 
 ## Development environment
