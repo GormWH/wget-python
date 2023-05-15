@@ -16,14 +16,14 @@ This program downloads HTML content of the 'url' and it's inner links, where the
 ## Preparation
 
 1. Install python  
-As mentioned in the [beginning](#development-environment), you must have python installed.
+    As mentioned in the [beginning](#development-environment), you must have python installed.
 
 2. Clone(or download) this repository
 
 3. Install dependencies  
-Install required modules to execute the program.  
-`requirements.txt` contains the necessary packages.  
-***You can install all the required packages with below command.***
+    Install required modules to execute the program.  
+    `requirements.txt` contains the necessary packages.  
+    ***You can install all the required packages with below command.***
 ```bash
 $ pip install -r requirements.txt
 ```
